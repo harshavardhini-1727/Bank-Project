@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kotak Bank</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f4f6f9;
+        }
+
+        .navbar {
+            background: #e30613;
+            color: white;
+            padding: 15px 30px;
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: #ffffff;
+            height: 100vh;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            padding-top: 20px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background: none;
+            text-align: left;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .sidebar button:hover {
+            background: #f1f1f1;
+        }
+
+        .main {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.08);
+            display: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        button.action {
+            background: #e30613;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button.action:hover {
+            background: #c20510;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #e30613;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .message {
+            margin-top: 15px;
+            color: green;
+            font-weight: 500;
+        }
+
+        .message.error {
+            color: red;
+        }
+    </style>
+
+    <script>
+        function showSection(id) {
+            localStorage.setItem("activeSection", id);
+            document.querySelectorAll(".card").forEach(c => c.style.display = "none");
+            document.getElementById(id).style.display = "block";
+            const msg = document.querySelector(".message");
+            if (msg) {
+                msg.innerText = "";
+            }
+        }
+
+        window.onload = function () {
+            let active = localStorage.getItem("activeSection");
+            if (active && document.getElementById(active)) {
+                document.querySelectorAll(".card").forEach(c => c.style.display = "none");
+                document.getElementById(active).style.display = "block";
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="navbar">
+    Kotak's Bank
+    <span>Digital Banking</span>
+</div>
+
+<div class="container">
+
+    <div class="sidebar">
+        <button onclick="showSection('create')">1. Create Account</button>
+        <button onclick="showSection('deposit')">2. Deposit</button>
+        <button onclick="showSection('withdraw')">3. Withdraw</button>
+        <button onclick="showSection('balance')">4. Check Balance</button>
+        <button onclick="showSection('display')">5. Display Accounts</button>
+        <button onclick="showSection('exit')">6. Exit</button>
+    </div>
+
+    <div class="main">
+
+        <div id="create" class="card">
+            <h2>Create Account</h2>
+            <form action="/createAccount" method="post">
+                <input type="text" name="accountHolderName" placeholder="Name" required>
+                <input type="number" name="accountNumber" placeholder="Account Number" required>
+                <input type="number" name="balance" placeholder="Balance" required>
+                <button class="action">Create</button>
+            </form>
+        </div>
+
+        <div id="deposit" class="card">
+            <h2>Deposit</h2>
+            <form action="/deposit" method="post">
+                <input type="number" name="accountNumber" placeholder="Account Number" required>
+                <input type="number" name="amount" placeholder="Amount" required>
+                <button class="action">Deposit</button>
+            </form>
+        </div>
+
+        <div id="withdraw" class="card">
+            <h2>Withdraw</h2>
+            <form action="/withdraw" method="post">
+                <input type="number" name="accountNumber" placeholder="Account Number" required>
+                <input type="number" name="amount" placeholder="Amount" required>
+                <button class="action">Withdraw</button>
+            </form>
+        </div>
+
+        <div id="balance" class="card">
+            <h2>Check Balance</h2>
+            <form action="/checkBalance" method="post">
+                <input type="number" name="accountNumber" placeholder="Account Number" required>
+                <button class="action">Check</button>
+            </form>
+        </div>
+
+        <div id="display" class="card">
+            <h2>All Accounts</h2>
+            <table>
+                <tr>
+                    <th>Account Number</th>
+                    <th>Name</th>
+                    <th>Balance</th>
+                </tr>
+                <tr th:each="acc : ${accounts}">
+                    <td th:text="${acc.accountNumber}"></td>
+                    <td th:text="${acc.accountHolderName}"></td>
+                    <td th:text="${acc.balance}"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="exit" class="card">
+            <h2>Thank you for using Harsha's Project of Banking System</h2>
+        </div>
+
+        <div th:classappend="${message != null && (message.contains('Invalid') || message.contains('Insufficient') || message.contains('exists'))} ? 'error' : ''"
+             class="message" th:text="${message}"></div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
